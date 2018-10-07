@@ -1,0 +1,23 @@
+{
+  "name": "campv2",
+  "version": "2.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexejheroYTB/Camp-2.0.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexejheroYTB/Camp-2.0/issues"
+  },
+  "homepage": "https://github.com/AlexejheroYTB/Camp-2.0#readme",
+  "dependencies": {
+    "discord.js": "github:hydrabolt/discord.js"
+  }
+}
