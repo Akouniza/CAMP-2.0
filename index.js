@@ -1,41 +1,28 @@
-const { Client, MessageEmbed } = require('discord.js');
+const Discord = require('discord.js');
 const ms = require('ms');
-/**
- * @type {string}
- */
+const fs = require('fs');
 const token = require('./token.json').token;
-/**
- * @type {{ prefix: string, ownerID: string, logChannelID: string, clientID:string }}
- */
-const config = require('./config.json');
+const config = require('./config.jsonc');
 
-const client = new Client();
+const client = new Discord.Client();
 
-const permission = Object.freeze({
-  user: 0,
-  staff: 1,
-  owner: 2,
-  dev: 3,
+client.timeout = { time: 0, channel: null };
+client.commands = new Discord.Collection();
+
+fs.readdir('./commands/', (err, files) => {
+  // // if (err) console.error(err);
+  const jsfiles = files.filter(f => f.split('.').pop() === 'js');
+
+  if (jsfiles.length <= 0) return; // // console.warn('There are no commands to load...');
+
+  // // console.debug(`Loading ${jsfiles.length} commands...`);
+
+  jsfiles.forEach((f) => {
+    const props = require(`./commands/${f}`);
+    // // console.log('Loading command x...');
+    client.commands.set(props.help.name, props);
+  });
 });
-
-/**
- * @returns {{name:string,description:string,permission:number}}
- * @param {string} name
- * @param {string} description
- * @param {number} permission
- */
-function cmd(name, description, permission_) {
-  return { name, description, permission_ };
-}
-
-/** @type {{name:string,description:string,permission:number}[]} */
-const commands = [
-  cmd('help', 'See a list of commands you can use', permission.user),
-  cmd('ping', 'Get the latency of the bot', permission.user),
-];
-
-/** @type {{time: number, channel: "TextChannel" | "DMChannel" | "GroupDMChannel"}} */
-const timeout = { time: 0, channel: null };
 
 client.on('ready', () => {
   const presence = {
@@ -60,14 +47,14 @@ client.on('message', (message) => {
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
-  const embed = new MessageEmbed()
+  const embed = new Discord.MessageEmbed()
     .setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL())
     .setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
 
-  if (timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(timeout.time, { long: true })}.`).setColor('RED'));
+  if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 
   if (!bot.hasPermission('ADMINISTRATOR')) {
-    const logembed = new MessageEmbed()
+    const logembed = new Discord.MessageEmbed()
       .setColor('RED')
       .setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL())
       .addField('ERROR! The bot does not have administrator permissions!', '(I am too lazy to check for individual permissions)')
@@ -78,64 +65,8 @@ client.on('message', (message) => {
     return;
   }
 
-  // TODO! Use command handler
-  // TODO: Use async
-  switch (command) {
-    case 'help':
-      commands.forEach(({ name, description, permission: perm }) => {
-        embed.addField(config.prefix + name, description);
-      });
-      message.channel.send(embed);
-      break;
-
-    case 'timeout':
-    case 'fuckoff':
-      if (args.length === 1 && args[0] === 'end') {
-        const embed2 = new MessageEmbed().setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL()).setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL()).addField('The timeout period was manually ended.', 'The bot can now be used once again!').setColor('GREEN');
-        timeout.channel.send(embed2);
-        timeout.time = 0;
-        timeout.channel = null;
-      }
-      if (timeout.time !== 0) {
-        embed.addField('Cannot set timeout.', `There is another timeout in progress. ${ms(timeout.time)}`).setColor('RED');
-        message.channel.send(embed);
-      }
-      if (args.join(' ')) {
-        timeout.time = args.join(' ');
-        timeout.channel = message.channel;
-        if (ms(args.join(' ')) < 0) {
-          // TODO: Send invalid arguments message
-          return;
-        }
-        embed.addField(`Alright, the bot is disabled for ${ms(args.join(' '), { long: true })}.`, `To disable the timeout, type \`${config.prefix}timeout end\``).setColor('RED');
-        message.channel.send(embed);
-        const timer = setInterval(() => {
-          timeout.time -= 1000;
-          if (timeout.time <= 0) {
-            const embed2 = new MessageEmbed().setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL()).setFooter('Timeout ended', client.user.avatarURL()).addField('The timeout period has ended.', 'The bot can now be used once again!').setColor('GREEN');
-            timeout.channel.send(embed2);
-            timeout.time = 0;
-            timeout.channel = null;
-            clearInterval(timer);
-          }
-        }, 1000);
-      }
-      break;
-
-    case 'ping':
-      const embed2 = new MessageEmbed();
-      embed2.setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL()).setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL()).addField('Client Latency', 'Calculating...', true).addField('API Latency', 'Calculating...', true);
-      message.channel.send(embed2).then((msg) => {
-        const clientLatency = msg.createdTimestamp - message.createdTimestamp;
-        const APILatency = Math.round(client.ping);
-        embed.addField('Client Latency', `${clientLatency}ms`, true);
-        embed.addField('API Latency', `${APILatency}ms`, true);
-        if (clientLatency > 1000 || APILatency > 300) embed.setColor('RED');
-        else if (clientLatency > 500 || APILatency > 200) embed.setColor('ORANGE');
-        else embed.setColor('GREEN');
-        msg.edit(embed);
-      });
-  }
+  const com = client.commands.get(command);
+  if (com) return com.run(bot, client, config, message, command, args);
 });
 
 client.login(token);
