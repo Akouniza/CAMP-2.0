@@ -22,6 +22,9 @@
         "padded-blocks": 1,
         "newline-per-chained-call": 0,
         "default-case": 0,
-        "no-case-declarations": 0
+        "no-case-declarations": 0,
+        "import/order": 1,
+        "global-require": 0,
+        "import/no-dynamic-require": 0
     }
 }
