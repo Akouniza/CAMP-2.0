@@ -2,12 +2,32 @@ const Discord = require('discord.js');
 const ms = require('ms');
 const fs = require('fs');
 const token = require('./token.json').token;
-const config = require('./config.jsonc');
+const config = require('./config.json');
 
 const client = new Discord.Client();
 
 client.timeout = { time: 0, channel: null };
 client.commands = new Discord.Collection();
+
+client.debug = (message) => {
+  client.guilds.get(config.guildID).channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setDescription(message).setAuthor('Debug'));
+  console.original.debug(message);
+};
+
+client.log = (message) => {
+  client.guilds.get(config.guildID).channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setDescription(message).setAuthor('Log').setColor('BLUE'));
+  console.log(message);
+};
+
+client.warn = (message) => {
+  client.guilds.get(config.guildID).channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setDescription(message).setAuthor('Warn').setColor('ORANGE'));
+  client.warn(message);
+};
+
+client.error = (message) => {
+  client.guilds.get(config.guildID).channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setDescription(message).setAuthor('Error').setColor('RED'));
+  console.warn(message);
+};
 
 fs.readdir('./commands/', (err, files) => {
   // // if (err) console.error(err);
