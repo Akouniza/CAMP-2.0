@@ -1,0 +1,33 @@
+{
+  "__comment": "Place your snippets for JavaScript here. Each snippet is defined under a snippet name and has a prefix, body and description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are: $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the same ids are connected.",
+
+  "Create command template": {
+    "prefix": "cmd",
+    "body": [
+      "/* eslint",
+      "  ",
+      "*/",
+      "",
+      "const Discord = require('discord.js');",
+      "",
+      "module.exports.run = async (bot, client, config, message, command, args) => {",
+      "  const embed = new Discord.MessageEmbed()",
+      "    .setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL())",
+      "    .setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}\\${command} ${args.join(' ')}`, message.member.user.avatarURL());",
+      "",
+      "  $0",
+      "};",
+      "",
+      "module.exports.help = {",
+      "  name: '$1',",
+      "  description: '$2',",
+      "  usage: '$3',",
+      "  examples: [$4],",
+      "  aliases: [$5],",
+      "  permission: '$6',",
+      "};",
+      ""
+    ],
+    "description": "Create command template"
+  }
+}
