@@ -8,7 +8,6 @@ const token = require('./token.json').token;
  * @type {{ prefix: string, ownerID: string, logChannelID: string, clientID:string }}
  */
 const config = require('./config.json');
-const fs
 
 const client = new Client();
 
