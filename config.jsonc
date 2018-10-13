@@ -1,8 +1,10 @@
 {
-  "prefix": "!",
-  "devID": "183249892712513536",
-  "logChannelID": "498535004088041514",
-  "clientID": "493359366381240341",
-  "staffRoleID": "500664424131067914", // 324213509506465793
-  "ownerRoleID": "500664424131067914"
+  "prefix": "!", // The prefix that should be used to call commands
+  "clientID": "493359366381240341", // The id of the bot
+  "devID": "183249892712513536", // The id of the creator of the bot
+  "guildID": "488059636608663552", // The id of the server //* 324207629784186882
+  "logChannelID": "498535004088041514", // The id of the log channel //!
+  "consoleChannelID": "498535004088041514", // The id of the console channel //!
+  "staffRoleID": "500664424131067914", // The id of the staff role //* 324213509506465793
+  "ownerRoleID": "500664424131067914" // The id of the owner role //* 325123431307804672
 }
