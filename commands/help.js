@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 
 /**
- *
  * @param {Discord.GuildMember} bot
  * @param {Discord.Client} client
  * @param {Discord.Message} message
