@@ -19,5 +19,6 @@ module.exports = function doCORSRequest(options, printResult) {
   if (/^POST/i.test(options.method)) {
     x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   }
+  x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   x.send(options.data);
 };
