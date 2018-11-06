@@ -10,7 +10,30 @@ module.exports = async (client) => {
 
   jsfiles.forEach((f) => {
     const props = require(`../../commands/${f}`);
-    client.debug(`Loading command '${props.help.name}'...`);
-    client.commands.set(props.help.name, props);
+    if (props.help.disabled) {
+      client.debug(`Skipped loading of command '${props.help.name}' since it was disabled`);
+    } else {
+      let debug = `Loaded command '${props.help.name}'`;
+      client.commands.set(props.help.name, props);
+      if (props.help.aliases) {
+        debug += ' with aliases ';
+        if (Array.isArray(props.help.aliases)) {
+          let first = true;
+          props.help.aliases.forEach((alias) => {
+            if (!first) debug += ', '; else first = false;
+            debug += '\'';
+            debug += alias;
+            debug += '\'';
+            client.commands.set(alias, props);
+          });
+        } else {
+          debug += '\'';
+          debug += props.help.aliases;
+          debug += '\'';
+          client.commands.set(props.help.aliases, props);
+        }
+      }
+      client.debug(debug);
+    }
   });
 };
