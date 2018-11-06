@@ -10,6 +10,9 @@ client.commands = new Discord.Collection();
 
 client.on('ready', async () => {
   await require('./events/ready/logging.js')(client, config);
+
+  client.log('Starting bot...');
+
   await require('./events/ready/loadcommands.js')(client);
   await require('./events/ready/setpresence.js')(client, config);
 
