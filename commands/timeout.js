@@ -55,4 +55,5 @@ module.exports.help = {
   examples: ['3s', '5m', '1h', 'end'],
   aliases: null,
   permission: 'owner',
+  disabled: true,
 };
