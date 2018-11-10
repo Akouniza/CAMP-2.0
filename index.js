@@ -5,6 +5,7 @@ const config = require('./config.json');
 
 const client = new Discord.Client();
 
+
 try {
   client.timeout = { time: 0, channel: null };
   client.commands = new Discord.Collection();
@@ -12,12 +13,12 @@ try {
   client.on('ready', async () => {
     await require('./events/ready/logging.js')(client, config);
 
-    client.log('Starting bot...');
+    console.log('Starting bot...');
 
     await require('./events/ready/loadcommands.js')(client);
     await require('./events/ready/setpresence.js')(client, config);
 
-    client.log(`Logged in as '${client.user.tag}'`);
+    console.log(`Logged in as '${client.user.tag}'`);
   });
 
   client.on('message', (message) => {
@@ -31,29 +32,39 @@ try {
     const command = args.shift().toLowerCase();
 
     const embed = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
 
     if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 
     if (!bot.hasPermission('ADMINISTRATOR')) {
-      client.error('The bot does not have admin permissions!');
+      console.error('The bot does not have admin permissions!');
       const logembed = new Discord.MessageEmbed()
         .setColor('RED')
-        .setAuthor(bot.nickname !== undefined ? bot.nickname : bot.user.username, client.user.avatarURL())
-        .addField('ERROR! The bot does not have administrator permissions!', '(I am too lazy to check for individual permissions)')
-        .setFooter(`${message.member.nickname !== undefined ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+        .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+        .addField('ERROR! The bot does not have administrator permissions!', 'The bot requires administrator permissions to ensure that it can respond to commands in any channel and have all of the required permissions (they are not checked for)')
+        .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
       message.guild.channels.get(config.logChannelID).send(logembed);
       embed.addField('An error occured!', 'Please contact an admin to check the log').setColor('RED');
       message.channel.send(embed);
       return;
     }
 
+    const permissions = ['user'];
+
+    if (message.member.id === config.devID) permissions.push('dev', 'owner', 'staff', 'trusted');
+    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID))) permissions.push('owner', 'staff', 'trusted');
+    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID))) permissions.push('staff', 'trusted');
+    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID))) permissions.push('trusted');
+
     const com = client.commands.get(command);
-    if (com) return com.run(bot, client, config, message, command, args);
+    if (com) {
+      if (!permissions.includes(com.help.permission)) return message.channel.send(embed.setDescription('You do not have the permission to run this command').addField('Required permission', com.help.permission).addField('Your permissions', permissions.join(', ')).setColor('RED'));
+      return com.run(bot, client, config, message, command, args);
+    }
   });
 
   client.login(token);
 } catch (err) {
-  if (client.error) client.error(err); else console.error(err);
+  console.error(err);
 }
