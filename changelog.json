@@ -1,0 +1,13 @@
+{
+  "version": "dev",
+  "items": [
+    "The initial release of CAMP 2.0!",
+    "Added the `!ping` command",
+    "~~Added the `!timeout` command~~",
+    "Added the `!help` command",
+    "~~Added the `!nexus` command~~",
+    "Added the `!about` command",
+    "Added the `!modder` command",
+    "Added the `!trusted` command"
+  ]
+}

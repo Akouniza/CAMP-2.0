@@ -85,6 +85,80 @@ module.exports.run = async (bot, client, config, message, command, args) => {
 
         const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
+        let matches = String(parsedData.match(/Found [0-9]* results/gim));
+        matches = Number(matches.match(/[0-9]+/gim));
+
+        if (matches > 20) {
+          return msg.edit(embed2.setColor('ORANGE').setDescription(`There are too many matching results. (${matches})`));
+        }
+
+        if (matches === 1) {
+          let match = String(parsedData.match(/<a href="https:\/\/www.nexusmods.com\/subnautica\/mods\/[0-9]+">.*<\/a>/gim)[0]);
+          match = String(match.match(/[0-9]*/gim));
+          match = match.replace(/,,,,,,,,,,2,,,,,,,,,,/gim, '');
+          match = match.replace(/,/gim, '');
+
+          const embed3 = new Discord.MessageEmbed()
+            .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+            .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+
+          return msg.edit(embed2.setDescription('Found one matching result. Getting mod information...')).then(async (msg_) => {
+            await require('../util/cors.js')({
+              method: 'GET',
+              url: `nexusmods.com/subnautica/mods/${match}`,
+              data: '',
+            }, async (data_) => {
+              if (!data_ || data_ === '') return msg_.edit(embed3.setColor('RED').setDescription('Could not get data from NexusMods!')) && client.error(`Could not get data from NexusMods! Mod ID = ${match}`);
+
+              if (String(data_).includes('The mod you were looking for couldn\'t be found')) return msg_.edit(embed3.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.'));
+
+              // eslint-disable-next-line no-underscore-dangle
+              const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
+
+              let name = String(parsedData_.match(/<h1>.*<\/h1>/gim));
+              name = name.substring(4, name.length - 5);
+              embed3.addField('Name', name);
+
+              embed3.addField('Link', `https://nexusmods.com/subnautica/mods/${args[0]}`);
+
+              let versionText = String(parsedData_.match(/<li class="stat-version">[^]*?<\/li>/gim));
+              versionText = String(versionText.match(/<div class="stat">[^]*?<\/div>/gim));
+              versionText = String(versionText.match(/>.+?(?=<)/gim));
+              versionText = versionText.substring(1);
+              embed3.addField('Version', versionText, true);
+
+              let uploader = String(parsedData_.match(/users\/[0-9]+?">.*(?=<\/a>)/));
+              uploader = uploader.substring(16);
+              embed3.addField('Uploaded by', uploader, true);
+
+              let likes = String(parsedData_.match(/mfp-zoom-in">[0-9]+(?=<\/a>)/gim));
+              likes = likes.substring(13);
+              embed3.addField('Endorsements', likes, true);
+
+              let views = String(parsedData_.match(/<div class="titlestat">Total views<\/div>[^]{100}/gim));
+              views = String(views.match(/[0-9,]/gim));
+              views = views.replace(/,/gim, '');
+              embed3.addField('Views', views, true);
+
+              let udls = String(parsedData_.match(/<div class="titlestat">Unique DLs<\/div>[^]{100}/gim));
+              udls = String(udls.match(/[0-9,]/gim));
+              udls = udls.replace(/,/gim, '');
+              embed3.addField('Unique Downloads', udls, true);
+
+              let tdls = String(parsedData_.match(/<div class="titlestat">Total DLs<\/div>[^]{100}/gim));
+              tdls = String(tdls.match(/[0-9,]/gim));
+              tdls = tdls.replace(/,/gim, '');
+              embed3.addField('Total Downloads', tdls, true);
+
+              let imagelink = String(parsedData_.match(/"background-image: url(.*?)"/gim));
+              imagelink = imagelink.substring(24, imagelink.length - 3);
+              embed3.setImage(imagelink);
+
+              msg_.edit(embed3.setColor('BLUE'));
+            });
+          });
+        }
+
         msg.edit(embed2.setColor('BLUE'));
       });
     });
@@ -98,4 +172,5 @@ module.exports.help = {
   examples: ['113', 'SMLHelper V2'],
   aliases: null,
   permission: 'user',
+  disabled: true,
 };
