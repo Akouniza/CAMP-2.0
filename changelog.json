@@ -2,12 +2,13 @@
   "version": "1.0",
   "items": [
     "The initial release of CAMP 2.0!",
-    "Added the `!ping` command",
-    "Added the `!help` command",
-    "Added the `!nexus` command",
-    "Added the `!about` command",
-    "Added the `!modder` command",
-    "Added the `!trusted` command",
-    "Added the `!permissions` command"
+    "Added permission levels: `user`, `trusted`, `staff`, `owner`, `dev`",
+    "Added the `!ping` command (permission level: `user`)",
+    "Added the `!help` command (permission level: `user`)",
+    "Added the `!nexus` command (permission level: `user`)",
+    "Added the `!about` command (permission level: `user`)",
+    "Added the `!modder` command (permission level: `trusted`)",
+    "Added the `!trusted` command (permission level: `staff`)",
+    "Added the `!permissions` command (permission level: `user`)"
   ]
 }
