@@ -51,10 +51,9 @@ try {
     }
 
     const permissions = ['user'];
-
-    if (message.member.id === config.devID) permissions.push('dev', 'owner', 'staff', 'trusted');
-    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID))) permissions.push('owner', 'staff', 'trusted');
-    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID))) permissions.push('staff', 'trusted');
+    if (message.member.id === config.devID) permissions.push('trusted', 'staff', 'owner', 'dev');
+    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID))) permissions.push('trusted', 'staff', 'owner');
+    else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID))) permissions.push('trusted', 'staff');
     else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID))) permissions.push('trusted');
 
     const com = client.commands.get(command);

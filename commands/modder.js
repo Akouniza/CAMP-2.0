@@ -8,19 +8,23 @@ const Discord = require('discord.js');
  * @param {string[]} args
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
-  const embed = new Discord.MessageEmbed()
-    .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-    .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-  if (message.mentions.members.size <= 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage'));
-  if (!message.mentions.members.first().roles.has(config.modderRoleID)) {
-    message.mentions.members.first().roles.add(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`);
-    embed.setDescription(`Gave the modder role to ${message.mentions.members.first().user.tag}`);
-  } else {
-    message.mentions.members.first().roles.remove(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`);
-    embed.setDescription(`Removed the modder role from ${message.mentions.members.first().user.tag}`);
+  try {
+    const embed = new Discord.MessageEmbed()
+      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    if (message.mentions.members.size <= 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention a user.')).catch(console.error);
+    if (!message.mentions.members.first().roles.has(config.modderRoleID)) {
+      message.mentions.members.first().roles.add(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
+      embed.setDescription(`Gave the modder role to ${message.mentions.members.first().user.tag}`);
+    } else {
+      message.mentions.members.first().roles.remove(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
+      embed.setDescription(`Removed the modder role from ${message.mentions.members.first().user.tag}`);
+    }
+    embed.setColor('GREEN');
+    message.channel.send(embed).catch(console.error);
+  } catch (e) {
+    console.error(e);
   }
-  embed.setColor('GREEN');
-  message.channel.send(embed);
 };
 
 module.exports.help = {
