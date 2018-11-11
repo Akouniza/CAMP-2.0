@@ -1,5 +1,5 @@
 {
-  "version": "dev",
+  "version": "1.0",
   "items": [
     "The initial release of CAMP 2.0!",
     "Added the `!ping` command",
