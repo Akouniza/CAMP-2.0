@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const ms = require('ms');
-const token = require('./token.json');
 const config = require('./config.json');
 
 const client = new Discord.Client();
@@ -63,7 +62,7 @@ try {
     }
   });
 
-  client.login(process.env.token ? process.env.token : token.token).catch(console.error);
+  client.login(process.env.token ? process.env.token : require('./token.json').token).catch(console.error);
 } catch (err) {
   console.error(err);
 }
