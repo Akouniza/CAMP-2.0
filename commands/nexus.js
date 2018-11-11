@@ -1,5 +1,52 @@
 const Discord = require('discord.js');
 
+const emojis = {
+  1: {
+    emoji: ':one:',
+    react: '1⃣',
+  },
+  2: {
+    emoji: ':two:',
+    react: '2⃣',
+  },
+  3: {
+    emoji: ':three:',
+    react: '3⃣',
+  },
+  4: {
+    emoji: ':four:',
+    react: '4⃣',
+  },
+  5: {
+    emoji: ':five:',
+    react: '5⃣',
+  },
+  6: {
+    emoji: ':six:',
+    react: '6⃣',
+  },
+  7: {
+    emoji: ':seven:',
+    react: '7⃣',
+  },
+  8: {
+    emoji: ':eight:',
+    react: '8⃣',
+  },
+  9: {
+    emoji: ':nine:',
+    react: '9⃣',
+  },
+  10: {
+    emoji: ':keycap_ten:',
+    react: '🔟',
+  },
+  x: {
+    emoji: ':x:',
+    react: '❌',
+  },
+};
+
 function getModInfo(embed3, parsedData_, match) {
   try {
     let name = String(parsedData_.match(/<h1>.*<\/h1>/gim));
@@ -159,35 +206,125 @@ module.exports.run = async (bot, client, config, message, command, args) => {
 
                 const matches = parsedData.match(/<div class="tile-content">[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>[^]*?<\/div>/gim);
 
-                const collector = msg.createReactionCollector(() => true, { time: 60000 });
-                collector.on('collect', (reaction, user) => {
-                  try {
-                    if (user.bot) return;
-                    if (user.id !== message.member.user.id) {
-                      return setTimeout(() => reaction.users.remove(user), 100);
-                    }
-                    //if (reaction.emoji !== )
-                  } catch (e) {
-                    console.error(e);
-                  }
-                });
-                collector.on('end', (reaction, reason) => {
-                  try {
+                const matcharray = new Discord.Collection();
 
+                const collector = msg.createReactionCollector(() => true, { time: 60000 });
+                collector.on('collect', async (reaction, user) => {
+                  try {
+                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => reaction.users.remove(user), 100);
+                    if (cancelledActions.includes(reaction.message.id)) return;
+                    if (user.bot) return;
+                    if (user.id !== message.member.user.id) return setTimeout(() => reaction.users.remove(user), 100);
+                    let index;
+                    switch (reaction.emoji.name) {
+                      case emojis[1].react:
+                        index = 1;
+                        break;
+                      case emojis[2].react:
+                        index = 2;
+                        break;
+                      case emojis[3].react:
+                        index = 3;
+                        break;
+                      case emojis[4].react:
+                        index = 4;
+                        break;
+                      case emojis[5].react:
+                        index = 5;
+                        break;
+                      case emojis[6].react:
+                        index = 6;
+                        break;
+                      case emojis[7].react:
+                        index = 7;
+                        break;
+                      case emojis[8].react:
+                        index = 8;
+                        break;
+                      case emojis[9].react:
+                        index = 9;
+                        break;
+                      case emojis[10].react:
+                        index = 10;
+                        break;
+                      case emojis.x.react:
+                        index = -1;
+                    }
+                    if (index === -1) {
+                      cancelledActions.push(reaction.message.id);
+                      // eslint-disable-next-line no-underscore-dangle
+                      const embed__ = new Discord.MessageEmbed()
+                        .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                        .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                        .setColor('RED')
+                        .setDescription('Cancelled by user.');
+                      reaction.message.reactions.removeAll();
+                      reaction.message.edit(embed__).catch(console.error);
+                      return;
+                    }
+                    cancelledActions.push(reaction.message.id);
+                    const embedX = new Discord.MessageEmbed()
+                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+                    const embedY = new Discord.MessageEmbed()
+                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+                    reaction.message.reactions.removeAll();
+                    msg.edit(embedY.setDescription('Loading mod information...')).catch(console.error);
+                    const match = matcharray.get(index);
+                    if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
+                    await require('../util/cors.js')({
+                      method: 'GET',
+                      url: `nexusmods.com/subnautica/mods/${match}`,
+                      data: '',
+                    }, async (data_) => {
+                      if (!data_ || data_ === '') return msg.edit(embedX.setColor('RED').setDescription('Could not get data from NexusMods!')) && client.error(`Could not get data from NexusMods! Mod ID = ${match}`);
+
+                      if (String(data_).includes('The mod you were looking for couldn\'t be found')) return msg.edit(embedX.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.'));
+
+                      // eslint-disable-next-line no-underscore-dangle
+                      const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
+
+                      getModInfo(embedX, parsedData_, match);
+
+                      msg.edit(embedX.setColor('BLUE'));
+                    });
                   } catch (e) {
                     console.error(e);
                   }
                 });
+                collector.on('end', (reaction) => {
+                  try {
+                    if (cancelledActions.includes(reaction.first().message.id)) return;
+                    cancelledActions.push(reaction.first().message.id);
+                    // eslint-disable-next-line no-underscore-dangle
+                    const embed__ = new Discord.MessageEmbed()
+                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                      .setColor('RED')
+                      .setDescription('Automatically cancelled after 60 seconds.');
+                    reaction.first().message.reactions.removeAll();
+                    reaction.first().message.edit(embed__).catch(console.error);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                });
+
+                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error) && console.error('Could not get data from NexusMods!');
 
                 let index = 0;
                 matches.forEach(async (match) => {
                   try {
+                    if (cancelledActions.includes(msg.id)) return;
+
                     index += 1;
 
                     let idmatch = match;
                     idmatch = String(idmatch.match(/<h3><a[^]*?<\/a><\/h3>/gim)[0]);
                     idmatch = String(idmatch.match(/<a href="https:\/\/www.nexusmods.com\/subnautica\/mods\/[0-9]+">/gim));
                     idmatch = String(idmatch.match(/[0-9]+/gim));
+
+                    matcharray.set(index, idmatch);
 
                     let namematch = match;
                     namematch = String(namematch.match(/<h3><a[^]*?<\/a><\/h3>/gim)[0]);
@@ -199,61 +336,22 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     authormatch = authormatch.replace(/\/[0-9]+">/gim, '');
                     authormatch = authormatch.substring(0, authormatch.length - 4);
 
-                    let emoji;
-                    let react;
-                    switch (index) {
-                      case 1:
-                        emoji = ':one:';
-                        react = '1⃣';
-                        break;
-                      case 2:
-                        emoji = ':two:';
-                        react = '2⃣';
-                        break;
-                      case 3:
-                        emoji = ':three:';
-                        react = '3⃣';
-                        break;
-                      case 4:
-                        emoji = ':four:';
-                        react = '4⃣';
-                        break;
-                      case 5:
-                        emoji = ':five:';
-                        react = '5⃣';
-                        break;
-                      case 6:
-                        emoji = ':six:';
-                        react = '6⃣';
-                        break;
-                      case 7:
-                        emoji = ':seven:';
-                        react = '7⃣';
-                        break;
-                      case 8:
-                        emoji = ':eight:';
-                        react = '8⃣';
-                        break;
-                      case 9:
-                        emoji = ':nine:';
-                        react = '9⃣';
-                        break;
-                      case 10:
-                        emoji = ':ten:';
-                        react = '🔟';
-                        break;
-                    }
+                    embed.setDescription(`${embed.description.substring(0, embed.description.length - 24)}\n${emojis[index].emoji} ${namematch} - ${authormatch} - [${idmatch}](https://nexusmods.com/subnautica/mods/${idmatch})${matchesno !== index ? '\nLoading more results...' : ''}`);
 
-                    embed.setDescription(`${embed.description}\n${emoji} ${namematch} - ${authormatch} - [${idmatch}](https://nexusmods.com/subnautica/mods/${idmatch})`);
+                    if (cancelledActions.includes(msg.id)) return;
+                    await msg.react(emojis[index].react).catch(console.error);
 
-                    // reactions.push({ emoji, react });
-                    await msg.react(react).catch(console.error);
+                    if (cancelledActions.includes(msg.id)) return;
+                    msg.edit(embed).catch(console.error);
                   } catch (e) {
                     console.error(e);
                   }
                 });
 
-                await msg.react('❌').catch(console.error);
+                if (cancelledActions.includes(msg.id)) return;
+
+                await msg.react(emojis.x.react).catch(console.error);
+                if (cancelledActions.includes(msg.id)) return;
                 msg.edit(embed.setColor('BLUE')).catch(console.error);
               } catch (e) {
                 console.error(e);
