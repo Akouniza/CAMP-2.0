@@ -7,6 +7,7 @@
     "Added the `!nexus` command",
     "Added the `!about` command",
     "Added the `!modder` command",
-    "Added the `!trusted` command"
+    "Added the `!trusted` command",
+    "Added the `!permissions` command"
   ]
 }
