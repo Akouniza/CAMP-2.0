@@ -16,6 +16,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       .setDescription('CAMP 2.0, the successor of CAMP, is a bot made for the Subnautica Modding discord server.')
       .addField('Author', `<@${message.guild.members.get(config.devID).user.id}>`, true)
       .addField('Version', changelog.version, true)
+      .addField('Running from', process.env.token ? 'Heroku' : 'Visual Studio Code', true)
       .addField('Changes', '• ' + changelog.items.join('\n• '));
     message.channel.send(embed).catch(console.error);
   } catch (e) {
