@@ -1,11 +1,10 @@
-const Discord = require('discord.js');
-const ms = require('ms');
-const config = require('./config.json');
-
-const client = new Discord.Client();
-
-
 try {
+  const Discord = require('discord.js');
+  const ms = require('ms');
+  const config = require('./config.json');
+
+  const client = new Discord.Client();
+
   client.timeout = { time: 0, channel: null };
   client.commands = new Discord.Collection();
 
