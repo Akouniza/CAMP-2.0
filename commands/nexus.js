@@ -66,7 +66,7 @@ function getModInfo(embed3, parsedData_, match) {
     versionText = versionText.substring(1);
     embed3.addField('Version', versionText, true);
 
-    let uploader = String(parsedData_.match(/users\/[0-9]+?">.*?<\/a>/gim));
+    let uploader = String(parsedData_.match(/users\/[0-9]+?">.*?<\/a>/gim)[0]);
     uploader = uploader.replace(/users\/[0-9]+?">/gim, '');
     uploader = uploader.substring(0, uploader.length - 3);
     embed3.addField('Uploaded by', uploader, true);
