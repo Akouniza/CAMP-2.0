@@ -296,6 +296,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 });
                 collector.on('end', (reaction) => {
                   try {
+                    if (reaction.size <= 0) return;
                     if (cancelledActions.includes(reaction.first().message.id)) return;
                     cancelledActions.push(reaction.first().message.id);
                     // eslint-disable-next-line no-underscore-dangle
