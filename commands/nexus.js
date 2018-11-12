@@ -259,7 +259,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                         .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
                         .setColor('RED')
                         .setDescription('Cancelled by user.');
-                      reaction.message.reactions.removeAll();
+                      setTimeout(() => reaction.message.reactions.removeAll(), 100);
                       reaction.message.edit(embed__).catch(console.error);
                       return;
                     }
