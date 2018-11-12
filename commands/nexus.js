@@ -270,7 +270,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     const embedY = new Discord.MessageEmbed()
                       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
                       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-                    reaction.message.reactions.removeAll();
+                    setTimeout(() => reaction.message.reactions.removeAll(), 100);
                     msg.edit(embedY.setDescription('Loading mod information...')).catch(console.error);
                     const match = matcharray.get(index);
                     if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
@@ -304,7 +304,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
                       .setColor('RED')
                       .setDescription('Automatically cancelled after 60 seconds.');
-                    reaction.first().message.reactions.removeAll();
+                    setTimeout(() => reaction.message.reactions.removeAll(), 100);
                     reaction.first().message.edit(embed__).catch(console.error);
                   } catch (e) {
                     console.error(e);
