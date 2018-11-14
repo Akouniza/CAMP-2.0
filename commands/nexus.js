@@ -130,7 +130,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       const embed2 = new Discord.MessageEmbed()
         .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
         .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-      if (modsTakenDownByMe.includes(args[0]) return message.channel.send(embed2.setColor('ORANGE').setDescription(`The mod you were looking for couldn\'t be found because it was taken down from nexusmods by <@${config.devID}> for various reasons... ¯\_(ツ)_/¯`));
+      if (modsTakenDownByMe.includes(args[0])) return message.channel.send(embed2.setColor('ORANGE').setDescription(`The mod you were looking for couldn\'t be found because it was taken down from nexusmods by <@${config.devID}> for various reasons... ¯\_(ツ)_/¯`));
       message.channel.send(embed.setDescription('Loading mod information...')).then(async (msg) => {
         try {
           await require('../util/cors.js')({
