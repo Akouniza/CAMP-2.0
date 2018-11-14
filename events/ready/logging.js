@@ -44,7 +44,7 @@ module.exports = async (client, config) => {
   client.error = message => console.error(message);
   client.exception = message => console.error(message);
 
-  client.on('debug', (s) =>
+  client.on('debug', (s) => {
     client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Debug').setDescription(s));
   });
   client.on('info', (s) => {
