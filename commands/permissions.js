@@ -27,8 +27,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
 
 module.exports.help = {
   name: 'permissions',
-  description: 'Get your permission level',
-  usage: null,
+  description: 'Gets your permission level',
+  usage: ' ',
   examples: null,
   aliases: null,
   permission: 'user',
