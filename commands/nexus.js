@@ -116,6 +116,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     const embed = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    if (args.length === 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must enter a mod id or a name.')).catch(console.error);
     if (args.length === 1 && String(Number(args[0])) === args[0]) {
       const embed2 = new Discord.MessageEmbed()
         .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
