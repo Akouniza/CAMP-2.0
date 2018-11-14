@@ -105,6 +105,15 @@ function getModInfo(embed3, parsedData_, match) {
 const cancelledActions = [];
 
 /**
+ * @type {string[]}
+ */
+const modsTakenDownByMe = [
+  '20', // Invisible vehicle command (redist game content)
+  '129', // Disable repeating horn sound (redist game content)
+  '143', // Optimal subnautica play (mod repack with no permission)
+];
+
+/**
  * @param {Discord.GuildMember} bot
  * @param {Discord.Client} client
  * @param {Discord.Message} message
@@ -121,6 +130,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       const embed2 = new Discord.MessageEmbed()
         .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
         .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+      if (modsTakenDownByMe.includes(args[0]) return message.channel.send(embed2.setColor('ORANGE').setDescription(`The mod you were looking for couldn\'t be found because it was taken down from nexusmods by <@${config.devID}> for various reasons... ¯\_(ツ)_/¯`));
       message.channel.send(embed.setDescription('Loading mod information...')).then(async (msg) => {
         try {
           await require('../util/cors.js')({
@@ -132,7 +142,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
               /** @type {Discord.Message} */
               if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
 
-              if (String(data).includes('The mod you were looking for couldn\'t be found')) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(console.error);
+              if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(console.error);
 
               const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
