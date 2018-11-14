@@ -31,7 +31,7 @@ const emojis = {
   },
   8: {
     emoji: ':eight:',
-    react: '8⃣',d
+    react: '8⃣',
   },
   9: {
     emoji: ':nine:',
