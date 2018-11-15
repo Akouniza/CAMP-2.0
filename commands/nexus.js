@@ -47,10 +47,30 @@ const emojis = {
   },
 };
 
+/**
+ * @returns {boolean}
+ * @param {string} string
+ */
+function isEmpty(string) {
+  try {
+    if (string && string !== '' && string.trim() !== '') return true;
+    return false;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/**
+ * @returns {boolean}
+ * @param {Discord.MessageEmbed} embed3
+ * @param {String} parsedData_
+ * @param {String} match
+ */
 function getModInfo(embed3, parsedData_, match) {
   try {
     let name = String(parsedData_.match(/<h1>.*<\/h1>/gim));
     name = name.substring(4, name.length - 5);
+    if (isEmpty(name)) return false;
     embed3.addField('Name', name);
 
     embed3.addField('Link', `https://nexusmods.com/subnautica/mods/${match}`);
@@ -58,42 +78,54 @@ function getModInfo(embed3, parsedData_, match) {
     let description = String(parsedData_.match(/<p>[^]*?<\/p>/gim)[0]);
     description = description.substring(3, description.length - 4);
     description = description.replace(/<br\s*\/>/gim, '');
+    if (isEmpty(description)) return false;
     embed3.addField('Description', description);
 
     let versionText = String(parsedData_.match(/<li class="stat-version">[^]*?<\/li>/gim));
     versionText = String(versionText.match(/<div class="stat">[^]*?<\/div>/gim));
     versionText = String(versionText.match(/>.+?(?=<)/gim));
     versionText = versionText.substring(1);
+    if (isEmpty(versionText)) return false;
     embed3.addField('Version', versionText, true);
 
     let uploader = String(parsedData_.match(/users\/[0-9]+?">.*?<\/a>/gim)[0]);
     uploader = uploader.replace(/users\/[0-9]+?">/gim, '');
     uploader = uploader.substring(0, uploader.length - 4);
+    if (isEmpty(uploader)) return false;
     embed3.addField('Uploaded by', uploader, true);
 
-    let likes = String(parsedData_.match(/mfp-zoom-in">[0-9,]+(?=<\/a>)/gim));
-    likes = likes.replace(/,/gim, '');
-    likes = likes.substring(13);
-    embed3.addField('Endorsements', likes, true);
+    let endorsements = String(parsedData_.match(/mfp-zoom-in">[0-9,]+(?=<\/a>)/gim));
+    endorsements = endorsements.replace(/,/gim, '');
+    endorsements = endorsements.substring(13);
+    if (isEmpty(endorsements)) return false;
+    embed3.addField('Endorsements', endorsements, true);
 
     let views = String(parsedData_.match(/<div class="titlestat">Total views<\/div>[^]{100}/gim));
     views = String(views.match(/[0-9,]/gim));
     views = views.replace(/,/gim, '');
+    if (isEmpty(views)) return false;
     embed3.addField('Views', views, true);
 
     let udls = String(parsedData_.match(/<div class="titlestat">Unique DLs<\/div>[^]{100}/gim));
     udls = String(udls.match(/[0-9,]/gim));
     udls = udls.replace(/,/gim, '');
+    if (isEmpty(udls)) return false;
     embed3.addField('Unique Downloads', udls, true);
 
     let tdls = String(parsedData_.match(/<div class="titlestat">Total DLs<\/div>[^]{100}/gim));
     tdls = String(tdls.match(/[0-9,]/gim));
     tdls = tdls.replace(/,/gim, '');
+    if (isEmpty(tdls)) return false;
     embed3.addField('Total Downloads', tdls, true);
 
     let imagelink = String(parsedData_.match(/"background-image: url(.*?)"/gim));
     imagelink = imagelink.substring(24, imagelink.length - 3);
-    embed3.setImage(imagelink);
+    if (isEmpty(imagelink)) return false;
+    if (!imagelink.includes('default_header')) {
+      embed3.setImage(imagelink);
+    }
+
+    return true;
   } catch (e) {
     console.error(e);
   }
