@@ -367,7 +367,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                   }
                 });
 
-                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error) && console.error('Could not get data from NexusMods!');
+                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error);
 
                 let index = 0;
                 matches.forEach(async (match) => {
