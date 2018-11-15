@@ -53,7 +53,7 @@ const emojis = {
  */
 function isEmpty(string) {
   try {
-    if (string && string !== '' && string.trim() !== '') return true;
+    if (!string && string !== '' && string.trim() !== '') return true;
     return false;
   } catch (e) {
     console.error(e);
