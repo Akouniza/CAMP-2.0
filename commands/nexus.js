@@ -162,15 +162,21 @@ module.exports.run = async (bot, client, config, message, command, args) => {
           }, async (data) => {
             try {
               /** @type {Discord.Message} */
-              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
+              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error);
 
               if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(console.error);
 
               const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-              getModInfo(embed2, parsedData, args[0]);
-
-              msg.edit(embed2.setColor('BLUE')).catch(console.error);
+              if (getModInfo(embed2, parsedData, args[0])) {
+                msg.edit(embed2.setColor('BLUE')).catch(console.error);
+              } else {
+                const errorembed = new Discord.MessageEmbed()
+                  .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                  .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                  .setColor('RED').setDescription('Could not get data from NexusMods!');
+                msg.edit(errorembed).catch(console.error);
+              }
             } catch (e) {
               console.error(e);
             }
@@ -230,9 +236,15 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       // eslint-disable-next-line no-underscore-dangle
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-                      getModInfo(embed3, parsedData_, match);
-
-                      msg_.edit(embed3.setColor('BLUE'));
+                      if (getModInfo(embed3, parsedData_, match)) {
+                        msg_.edit(embed3.setColor('BLUE')).catch(console.error);
+                      } else {
+                        const errorembed = new Discord.MessageEmbed()
+                          .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                          .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                          .setColor('RED').setDescription('Could not get data from NexusMods!');
+                        msg_.edit(errorembed).catch(console.error);
+                      }
                     });
                   });
                 }
@@ -322,9 +334,15 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       // eslint-disable-next-line no-underscore-dangle
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-                      getModInfo(embedX, parsedData_, match);
-
-                      msg.edit(embedX.setColor('BLUE'));
+                      if (getModInfo(embedX, parsedData_, match)) {
+                        msg.edit(embedX.setColor('BLUE')).catch(console.error);
+                      } else {
+                        const errorembed = new Discord.MessageEmbed()
+                          .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
+                          .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                          .setColor('RED').setDescription('Could not get data from NexusMods!');
+                        msg.edit(errorembed).catch(console.error);
+                      }
                     });
                   } catch (e) {
                     console.error(e);
