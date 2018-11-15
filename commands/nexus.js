@@ -224,10 +224,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => reaction.users.remove(user), 100);
+                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user); } catch (e) { console.error(e); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
-                    if (user.id !== message.member.user.id) return setTimeout(() => reaction.users.remove(user), 100);
+                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user); } catch (e) { console.error(e); } }, 100);
                     let index;
                     switch (reaction.emoji.name) {
                       case emojis[1].react:
@@ -271,7 +271,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                         .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
                         .setColor('RED')
                         .setDescription('Cancelled by user.');
-                      setTimeout(() => reaction.message.reactions.removeAll(), 100);
+                      if (!reaction.message) return;
+                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
                       reaction.message.edit(embed__).catch(console.error);
                       return;
                     }
@@ -282,7 +283,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     const embedY = new Discord.MessageEmbed()
                       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
                       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-                    setTimeout(() => reaction.message.reactions.removeAll(), 100);
+                    if (!reaction.message) return;
+                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
                     msg.edit(embedY.setDescription('Loading mod information...')).catch(console.error);
                     const match = matcharray.get(index);
                     if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
@@ -317,7 +319,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
                       .setColor('RED')
                       .setDescription('Automatically cancelled after 60 seconds.');
-                    setTimeout(() => reaction.message.reactions.removeAll(), 100);
+                    if (!reaction.first().message) return;
+                    setTimeout(() => { try { reaction.first().message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
                     reaction.first().message.edit(embed__).catch(console.error);
                   } catch (e) {
                     console.error(e);
