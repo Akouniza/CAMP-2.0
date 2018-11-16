@@ -1,7 +1,7 @@
 try {
   const Discord = require('discord.js');
   const ms = require('ms');
-  const config = require('./config.json');
+  const config = process.env.token ? require('./config.json') : require('./dev-config.json');
 
   const client = new Discord.Client();
 
