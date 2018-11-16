@@ -97,8 +97,8 @@ function getModInfo(embed3, parsedData_, match) {
     let endorsements = String(parsedData_.match(/mfp-zoom-in">[0-9,]+(?=<\/a>)/gim));
     endorsements = endorsements.replace(/,/gim, '');
     endorsements = endorsements.substring(13);
-    if (isEmpty(endorsements)) return false;
-    embed3.addField('Endorsements', endorsements, true);
+    if (isEmpty(endorsements)) embed3.addField('Endorsements', '_Unavailable_', true);
+    else embed3.addField('Endorsements', endorsements, true);
 
     let views = String(parsedData_.match(/<div class="titlestat">Total views<\/div>[^]{100}/gim));
     views = String(views.match(/[0-9,]/gim));
@@ -258,10 +258,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user); } catch (e) { console.error(e); } }, 100);
+                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
-                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user); } catch (e) { console.error(e); } }, 100);
+                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     let index;
                     switch (reaction.emoji.name) {
                       case emojis[1].react:
@@ -306,7 +306,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                         .setColor('RED')
                         .setDescription('Cancelled by user.');
                       if (!reaction.message) return;
-                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
+                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.error); } catch (e) { console.error(e); } }, 100);
                       reaction.message.edit(embed__).catch(console.error);
                       return;
                     }
@@ -318,7 +318,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
                       .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
                     if (!reaction.message) return;
-                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
+                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.error); } catch (e) { console.error(e); } }, 100);
                     msg.edit(embedY.setDescription('Loading mod information...')).catch(console.error);
                     const match = matcharray.get(index);
                     if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
