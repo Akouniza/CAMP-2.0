@@ -136,6 +136,10 @@ function getModInfo(embed3, parsedData_, match) {
  * @type {string[]}
  */
 const cancelledActions = [];
+/**
+ * @type {string[]}
+ */
+const loading = [];
 
 /**
  * @param {Discord.GuildMember} bot
@@ -259,6 +263,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
+                    let isLoading = loading.includes(reaction.message.id);
+                    while (isLoading) {
+                      isLoading = loading.includes(reaction.message.id);
+                    }
                     if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
@@ -370,6 +378,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
 
                 if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error);
 
+                loading.push(msg.id);
+
                 let index = 0;
                 matches.forEach(async (match) => {
                   try {
@@ -411,6 +421,8 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 await msg.react(emojis.x.react).catch(console.error);
                 if (cancelledActions.includes(msg.id)) return;
                 msg.edit(embed.setColor('BLUE')).catch(console.error);
+
+                loading.splice(loading.indexOf(msg.id));
               } catch (e) {
                 console.error(e);
               }
