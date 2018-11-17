@@ -263,10 +263,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    let isLoading = loading.includes(reaction.message.id);
-                    while (isLoading) {
-                      isLoading = loading.includes(reaction.message.id);
-                    }
+                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
