@@ -263,10 +263,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
+                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
                     let index;
                     switch (reaction.emoji.name) {
