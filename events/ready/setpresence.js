@@ -1,7 +1,4 @@
-/**
- * @param {Discord.Client} client
- */
-module.exports = async (client, config) => {
+export default async (client, config) => {
   const presence = {
     status: 'online',
     afk: false,

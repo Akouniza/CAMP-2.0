@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const fs = require('fs');
+import Discord from 'discord.js';
+import fs from 'fs';
 
 /**
  * @param {Discord.GuildMember} bot
@@ -8,7 +8,7 @@ const fs = require('fs');
  * @param {string} command
  * @param {string[]} args
  */
-module.exports.run = async (bot, client, config, message, command, args) => {
+export async function run(bot, client, config, message, command, args) {
   try {
     const embed = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
@@ -29,9 +29,9 @@ module.exports.run = async (bot, client, config, message, command, args) => {
   } catch (e) {
     console.error(e);
   }
-};
+}
 
-module.exports.help = {
+export const help = {
   name: 'blacklist',
   description: 'Ban someone from using the bot (or unban them)',
   usage: '<user-mention>',

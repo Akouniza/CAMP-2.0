@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
-const Discord = require('discord.js');
+import { MessageEmbed } from 'discord.js';
 
 /**
  * @param {Discord.Client} client
  */
-module.exports = async (client, config) => {
+export default async (client, config) => {
   const debug = console.debug;
   const log = console.log;
   const info = console.info;
@@ -50,15 +49,15 @@ module.exports = async (client, config) => {
   client.exception = message => console.error(message);
 
   client.on('debug', (s) => {
-    client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Debug').setDescription(s));
+    client.channels.get(config.consoleChannelID).send(new MessageEmbed().setAuthor('Debug').setDescription(s));
   });
   client.on('info', (s) => {
-    client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Log').setDescription(s).setColor('BLUE'));
+    client.channels.get(config.consoleChannelID).send(new MessageEmbed().setAuthor('Log').setDescription(s).setColor('BLUE'));
   });
   client.on('warn', (s) => {
-    client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Warn').setDescription(s).setColor('ORANGE'));
+    client.channels.get(config.consoleChannelID).send(new MessageEmbed().setAuthor('Warn').setDescription(s).setColor('ORANGE'));
   });
   client.on('error', (s) => {
-    client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Error').setDescription(s).setColor('RED'));
+    client.channels.get(config.consoleChannelID).send(new MessageEmbed().setAuthor('Error').setDescription(s).setColor('RED'));
   });
 };

@@ -1,6 +1,6 @@
-const read = require('fs-readdir-recursive');
+import read from 'fs-readdir-recursive';
 
-module.exports = async (client) => {
+export default async (client) => {
   const files = read('./commands/');
   const jsfiles = files.filter(f => f.split('.').pop() === 'js');
 

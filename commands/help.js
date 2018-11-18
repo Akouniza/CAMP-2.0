@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
 /**
  * @param {Discord.GuildMember} bot
@@ -7,7 +7,7 @@ const Discord = require('discord.js');
  * @param {string} command
  * @param {string[]} args
  */
-module.exports.run = async (bot, client, config, message, command, args) => {
+export async function run(bot, client, config, message, command, args) {
   try {
     const user = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
@@ -58,9 +58,9 @@ module.exports.run = async (bot, client, config, message, command, args) => {
   } catch (e) {
     console.error(e);
   }
-};
+}
 
-module.exports.help = {
+export const help = {
   name: 'help',
   description: 'Shows a list of commands you can use.',
   usage: ' ',
