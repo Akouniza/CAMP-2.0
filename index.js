@@ -1,7 +1,8 @@
 try {
   const Discord = require('discord.js');
   const ms = require('ms');
-  const config = process.env.token && process.env.dev !== 'true' ? require('./config.json') : require('./dev-config.json');
+  const config = process.env.dev === 'false' ? require('./config.json') : require('./dev-config.json');
+  const token = process.env.dev === 'false' ? process.env.token : (process.env.devtoken ? process.env.devtoken : require('./token.json').devtoken);
 
   const client = new Discord.Client();
 
@@ -61,7 +62,7 @@ try {
     }
   });
 
-  client.login(process.env.token ? process.env.token : require('./token.json').token).catch(console.error);
+  client.login(token).catch(console.error);
 } catch (err) {
   console.error(err);
 }
