@@ -43,9 +43,9 @@ try {
         .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
         .addField('ERROR! The bot does not have administrator permissions!', 'The bot requires administrator permissions to ensure that it can respond to commands in any channel and have all of the required permissions (they are not individually checked)')
         .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-      message.guild.channels.get(config.consoleChannelID).send(logembed);
+      //message.guild.channels.get(config.consoleChannelID).send(logembed);
       embed.addField('An error occured!', 'Please contact an admin to check the log').setColor('RED');
-      message.channel.send(embed);
+      //message.channel.send(embed);
       return;
     }
 
