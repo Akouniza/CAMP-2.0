@@ -12,29 +12,29 @@ module.exports = async (client, config) => {
   const error = console.error;
   const exception = console.exception;
 
-  console.debug = (info, params) => {
-    client.emit('debug', info);
-    debug(info, params);
+  console.debug = (info_, params) => {
+    client.emit('debug', info_);
+    debug(info_, params);
   };
-  console.log = (info, params) => {
-    client.emit('info', info);
-    log(info, params);
+  console.log = (info_, params) => {
+    client.emit('info', info_);
+    log(info_, params);
   };
-  console.info = (info, params) => {
-    client.emit('info', info);
-    info(info, params);
+  console.info = (info_, params) => {
+    client.emit('info', info_);
+    info(info_, params);
   };
-  console.warn = (info, params) => {
-    client.emit('warn', info);
-    warn(info, params);
+  console.warn = (info_, params) => {
+    client.emit('warn', info_);
+    warn(info_, params);
   };
-  console.error = (info, params) => {
-    client.emit('error', info);
-    error(info, params);
+  console.error = (info_, params) => {
+    client.emit('error', info_);
+    error(info_, params);
   };
-  console.exception = (info, params) => {
-    client.emit('error', info);
-    exception(info, params);
+  console.exception = (info_, params) => {
+    client.emit('error', info_);
+    exception(info_, params);
   };
 
   client.debug = message => console.debug(message);
