@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+const Discord = require('discord.js');
 
 const emojis = {
   1: {
@@ -148,7 +148,7 @@ const loading = [];
  * @param {string} command
  * @param {string[]} args
  */
-export async function run(bot, client, config, message, command, args) {
+module.exports.run = async (bot, client, config, message, command, args) => {
   try {
     const embed = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
@@ -435,9 +435,9 @@ export async function run(bot, client, config, message, command, args) {
   } catch (e) {
     console.error(e);
   }
-}
+};
 
-export const help = {
+module.exports.help = {
   name: 'nexus',
   description: 'Retrieves mod information from nexusmods.com',
   usage: '<id>/<name>',

@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+const Discord = require('discord.js');
 
 /**
  * @param {Discord.GuildMember} bot
@@ -7,7 +7,7 @@ import Discord from 'discord.js';
  * @param {string} command
  * @param {string[]} args
  */
-export async function run(bot, client, config, message, command, args) {
+module.exports.run = async (bot, client, config, message, command, args) => {
   try {
     const embed = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
@@ -26,9 +26,9 @@ export async function run(bot, client, config, message, command, args) {
   } catch (e) {
     console.error(e);
   }
-}
+};
 
-export const help = {
+module.exports.help = {
   name: 'trusted',
   description: 'Give someone the trusted role (or remove it from them)',
   usage: '<user-mention>',

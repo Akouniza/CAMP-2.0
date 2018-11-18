@@ -1,7 +1,11 @@
-import Discord from 'discord.js';
-import ms from 'ms';
+/* eslint
+  no-param-reassign: 1
+*/
 
-export async function run(bot, client, config, message, command, args) {
+const Discord = require('discord.js');
+const ms = require('ms');
+
+module.exports.run = async (bot, client, config, message, command, args) => {
   const embed = new Discord.MessageEmbed()
     .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
     .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
@@ -42,9 +46,9 @@ export async function run(bot, client, config, message, command, args) {
       }
     }, 1000);
   }
-}
+};
 
-export const help = {
+module.exports.help = {
   name: 'timeout',
   description: 'Disable the bot for a set amount of time',
   usage: '<time>/end',
