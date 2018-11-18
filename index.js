@@ -36,7 +36,7 @@ try {
 
     if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 
-    if (!bot.hasPermission('ADMINISTRATOR')) {
+    /* if (!bot.hasPermission('ADMINISTRATOR')) {
       console.error('The bot does not have admin permissions!');
       const logembed = new Discord.MessageEmbed()
         .setColor('RED')
@@ -47,7 +47,7 @@ try {
       embed.addField('An error occured!', 'Please contact an admin to check the log').setColor('RED');
       //message.channel.send(embed);
       return;
-    }
+    } */
 
     const permissions = ['user'];
     if (message.member.id === config.devID) permissions.push('trusted', 'staff', 'owner', 'dev');
