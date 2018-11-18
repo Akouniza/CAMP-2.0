@@ -14,23 +14,28 @@ module.exports = async (client, config) => {
 
   console.debug = (info_, params) => {
     client.emit('debug', info_);
-    debug(info_, params);
+    if (params) debug(info_, params);
+    else debug(info_);
   };
   console.log = (info_, params) => {
     client.emit('info', info_);
-    log(info_, params);
+    if (params) log(info_, params);
+    else log(info_);
   };
   console.info = (info_, params) => {
     client.emit('info', info_);
-    info(info_, params);
+    if (params) info(info_, params);
+    else info(info_);
   };
   console.warn = (info_, params) => {
     client.emit('warn', info_);
-    warn(info_, params);
+    if (params) warn(info_, params);
+    else warn(info_);
   };
   console.error = (info_, params) => {
     client.emit('error', info_);
-    error(info_, params);
+    if (params) error(info_, params);
+    else error(info_);
   };
   console.exception = (info_, params) => {
     client.emit('error', info_);
