@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.0a",
   "items": [
     "The initial release of CAMP 2.0!",
     "Added permission levels: `user`, `trusted`, `staff`, `owner`, `dev`",
@@ -9,6 +9,7 @@
     "Added the `!about` command (permission level: `user`)",
     "Added the `!modder` command (permission level: `trusted`)",
     "Added the `!trusted` command (permission level: `staff`)",
-    "Added the `!permissions` command (permission level: `user`)"
+    "Added the `!permissions` command (permission level: `user`)",
+    "_Hotfix 1.0a:_ Disabled heartbeat messages in log"
   ]
 }
