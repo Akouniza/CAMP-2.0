@@ -8,6 +8,7 @@ try {
 
   client.timeout = { time: 0, channel: null };
   client.commands = new Discord.Collection();
+  client.op = false;
 
   client.on('ready', async () => {
     try {
@@ -42,7 +43,7 @@ try {
       if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 
       const permissions = ['user'];
-      if (message.member.id === config.devID) permissions.push('trusted', 'staff', 'owner', 'dev');
+      if (message.member.id === config.devID) if (client.op) permissions.push('trusted', 'staff', 'owner', 'dev'); else permissions.push('trusted', 'dev');
       else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID))) permissions.push('trusted', 'staff', 'owner');
       else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID))) permissions.push('trusted', 'staff');
       else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID))) permissions.push('trusted');
