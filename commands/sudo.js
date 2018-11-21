@@ -15,12 +15,12 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     
     const embed = new Discord.MessageEmbed()
       .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${newcommand} ${newargs.join(' ')}`, message.member.user.avatarURL());
+      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
     
     if (message.mentions.members.size < 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention one user to run the command on.')).catch(console.error);
     if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nWhy are you trying to sudo yourself?')).catch(console.error);
     if (message.mentions.members.first().user.bot) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot sudo a bot.')).catch(console.error);
-    if (args.length < 2) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must specify a command to run')).catch(console.error);
+    if (newargs.length < 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must specify a command to run')).catch(console.error);
     
     message.author = message.mentions.users.first();
     message.content = `${config.prefix}${newcommand} ${newargs.join(' ')}`;
