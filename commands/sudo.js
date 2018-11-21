@@ -24,7 +24,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     message.author = message.mentions.users.first();
     message.content = `${config.prefix}{newcommand} {newargs.join(' ')}`;
     message.mentions.members.delete(Array.from(message.mentions.members.values())[0]);
-    message.mentions.users.delete(Array.from(message.users.members.values())[0]);
+    message.mentions.users.delete(Array.from(message.mentions.users.values())[0]);
     
     console.debug(`Running command \`${message.content}\` as ${message.member.id}.`);
 
