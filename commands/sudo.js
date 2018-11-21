@@ -37,7 +37,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     if (com) {
       if (permissions.includes(com.help.permission)) return com.run(bot, client, config, message, command, args);
       if (com.help.permission2 && permissions.includes(com.help.permission2)) return com.run(bot, client, config, message, command, args);
-      return message.channel.send(embed.setDescription('You do not have the permission to run this command').addField('Required permission', com.help.permission).addField('Your permissions', permissions.join(', ')).setColor('RED'));
+      return message.channel.send(embed.setDescription('You do not have the permission to run this command').addField('Required permission', `${com.help.permission}${com.help.permission2 ? `, ${com.help.permission2}` : ''}`).addField('Your permissions', permissions.join(', ')).setColor('RED'));
     }
   } catch (e) {
     console.error(e);
