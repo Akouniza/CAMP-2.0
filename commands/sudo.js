@@ -11,6 +11,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
   try {
     if (message.mentions.members.size < 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention one user to run the command on.')).catch(console.error);
     if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nWhy are you trying to sudo yourself?')).catch(console.error);
+    if (message.mentions.members.first().user.bot) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot sudo a bot.')).catch(console.error);
     
     const newargs = args;
     newargs.shift();
