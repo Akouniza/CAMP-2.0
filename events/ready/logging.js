@@ -50,7 +50,7 @@ module.exports = async (client, config) => {
   client.exception = message => console.error(message);
 
   client.on('debug', (s) => {
-    if (s.includes('[ws] [connection]')) return;
+    if (s.includes('[connection]')) return;
     client.channels.get(config.consoleChannelID).send(new Discord.MessageEmbed().setAuthor('Debug').setDescription(s));
   });
   client.on('info', (s) => {
