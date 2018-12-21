@@ -16,13 +16,11 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot use this command on yourself.')).catch(console.error);
     if (!message.mentions.members.first().roles.has(config.modderRoleID)) {
       message.mentions.members.first().roles.add(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      embed.setDescription(`Gave the modder role to ${message.mentions.members.first().user.tag}`);
+      message.react('greenTick:312314752711786497');
     } else {
       message.mentions.members.first().roles.remove(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      embed.setDescription(`Removed the modder role from ${message.mentions.members.first().user.tag}`);
+      message.react('redTick:312314733816709120');
     }
-    embed.setColor('GREEN');
-    message.channel.send(embed).catch(console.error);
   } catch (e) {
     console.error(e);
   }
