@@ -19,7 +19,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     message.channel.send(embed2).then((msg) => {
       try {
         const clientLatency = msg.createdTimestamp - message.createdTimestamp;
-        const APILatency = Math.round(client.ping);
+        const APILatency = Math.round(client.ws.ping);
         embed.addField('Client Latency', `${clientLatency}ms`, true);
         embed.addField('API Latency', `${APILatency}ms`, true);
         if (clientLatency > 1000 || APILatency > 300) embed.setColor('RED');
