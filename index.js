@@ -19,7 +19,7 @@ try {
 
       client.guilds.get(config.guildID).members.fetch({ cache: true });
 
-      console.log('Bot restarted');
+      console.log(`Bot restarted. Current version: ${require('./version.json').version}`);
     } catch (e) {
       console.error(e);
     }
