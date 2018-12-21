@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const defaultEmbed = require('../util/embed');
 
 const emojis = {
   1: {
@@ -50,14 +51,16 @@ const emojis = {
 /**
  * @returns {boolean}
  * @param {string} string
+ * @param {Discord.Message} message
  */
-function isEmpty(string) {
+function isEmpty(string, message) {
   try {
     if (!string) return true;
     if (string.trim() === '') return true;
     return false;
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 }
 
@@ -66,12 +69,13 @@ function isEmpty(string) {
  * @param {Discord.MessageEmbed} embed3
  * @param {String} parsedData_
  * @param {String} match
+ * @param {Discord.Message} message
  */
-function getModInfo(embed3, parsedData_, match) {
+function getModInfo(embed3, parsedData_, match, message) {
   try {
     let name = String(parsedData_.match(/<h1>.*<\/h1>/gim));
     name = name.substring(4, name.length - 5);
-    if (isEmpty(name)) return false;
+    if (isEmpty(name, message)) return false;
     embed3.addField('Name', name);
 
     embed3.addField('Link', `https://nexusmods.com/subnautica/mods/${match}`);
@@ -79,14 +83,14 @@ function getModInfo(embed3, parsedData_, match) {
     let description = String(parsedData_.match(/<p>[^]*?<\/p>/gim)[0]);
     description = description.substring(3, description.length - 4);
     description = description.replace(/<br\s*\/>/gim, '');
-    if (isEmpty(description)) return false;
+    if (isEmpty(description, message)) return false;
     embed3.addField('Description', description);
 
     let versionText = String(parsedData_.match(/<li class="stat-version">[^]*?<\/li>/gim));
     versionText = String(versionText.match(/<div class="stat">[^]*?<\/div>/gim));
     versionText = String(versionText.match(/>.+?(?=<)/gim));
     versionText = versionText.substring(1);
-    if (isEmpty(versionText)) return false;
+    if (isEmpty(versionText, message)) return false;
     embed3.addField('Version', versionText, true);
 
     let uploader = String(parsedData_.match(/users\/[0-9]+?">.*?<\/a>/gim)[0]);
@@ -98,37 +102,38 @@ function getModInfo(embed3, parsedData_, match) {
     let endorsements = String(parsedData_.match(/mfp-zoom-in">[0-9,]+(?=<\/a>)/gim));
     endorsements = endorsements.replace(/,/gim, '');
     endorsements = endorsements.substring(13);
-    if (isEmpty(endorsements)) embed3.addField('Endorsements', '_Unavailable_', true);
+    if (isEmpty(endorsements, message)) embed3.addField('Endorsements', '_Unavailable_', true);
     else embed3.addField('Endorsements', endorsements, true);
 
     let views = String(parsedData_.match(/<div class="titlestat">Total views<\/div>[^]{100}/gim));
     views = String(views.match(/[0-9,]/gim));
     views = views.replace(/,/gim, '');
-    if (isEmpty(views)) return false;
+    if (isEmpty(views, message)) return false;
     embed3.addField('Views', views, true);
 
     let udls = String(parsedData_.match(/<div class="titlestat">Unique DLs<\/div>[^]{100}/gim));
     udls = String(udls.match(/[0-9,]/gim));
     udls = udls.replace(/,/gim, '');
-    if (isEmpty(udls)) return false;
+    if (isEmpty(udls, message)) return false;
     embed3.addField('Unique Downloads', udls, true);
 
     let tdls = String(parsedData_.match(/<div class="titlestat">Total DLs<\/div>[^]{100}/gim));
     tdls = String(tdls.match(/[0-9,]/gim));
     tdls = tdls.replace(/,/gim, '');
-    if (isEmpty(tdls)) return false;
+    if (isEmpty(tdls, message)) return false;
     embed3.addField('Total Downloads', tdls, true);
 
     let imagelink = String(parsedData_.match(/"background-image: url(.*?)"/gim));
     imagelink = imagelink.substring(24, imagelink.length - 3);
-    if (isEmpty(imagelink)) return false;
+    if (isEmpty(imagelink, message)) return false;
     if (!imagelink.includes('default_header')) {
       embed3.setImage(imagelink);
     }
 
     return true;
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 }
 
@@ -150,14 +155,10 @@ const loading = [];
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    const embed = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-    if (args.length === 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must enter a mod id or a name.')).catch(console.error);
+    const embed = defaultEmbed(bot, client, message, config, command, args);
+    if (args.length === 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must enter a mod id or a name.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
     if (args.length === 1 && String(Number(args[0])) === args[0]) {
-      const embed2 = new Discord.MessageEmbed()
-        .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-        .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+      const embed2 = defaultEmbed(bot, client, message, config, command, args);
       message.channel.send(embed.setDescription('Loading mod information...')).then(async (msg) => {
         try {
           await require('../util/cors.js')({
@@ -166,35 +167,32 @@ module.exports.run = async (bot, client, config, message, command, args) => {
             data: '',
           }, async (data) => {
             try {
-              /** @type {Discord.Message} */
-              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error);
+              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
-              if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(console.error);
+              if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
               const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-              if (getModInfo(embed2, parsedData, args[0])) {
-                msg.edit(embed2.setColor('BLUE')).catch(console.error);
+              if (getModInfo(embed2, parsedData, args[0], message)) {
+                msg.edit(embed2.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
               } else {
-                const errorembed = new Discord.MessageEmbed()
-                  .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                  .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                const errorembed = defaultEmbed(bot, client, message, config, command, args)
                   .setColor('RED').setDescription('Could not get data from NexusMods!');
-                msg.edit(errorembed).catch(console.error);
+                msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
               }
             } catch (e) {
-              console.error(e);
+              message.channel.send(`\`\`\`${e.stack}\`\`\``);
+              console.error(e.stack);
             }
           });
         } catch (e) {
-          console.error(e);
+          message.channel.send(`\`\`\`${e.stack}\`\`\``);
+          console.error(e.stack);
         }
-      }).catch(console.error);
+      }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
     } else {
       try {
-        const embed2 = new Discord.MessageEmbed()
-          .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-          .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+        const embed2 = defaultEmbed(bot, client, message, config, command, args);
         message.channel.send(embed.setDescription('Searching for matching mods...')).then(async (_msg_) => {
           try {
             /** @type {Discord.Message} */
@@ -205,9 +203,9 @@ module.exports.run = async (bot, client, config, message, command, args) => {
               data: '',
             }, async (data) => {
               try {
-                if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
+                if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
 
-                if (String(data).includes('No result')) return msg.edit(embed2.setColor('ORANGE').setDescription('There are no matching results.')).catch(console.error);
+                if (String(data).includes('No result')) return msg.edit(embed2.setColor('ORANGE').setDescription('There are no matching results.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
                 const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
@@ -215,7 +213,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 matchesno = Number(matchesno.match(/[0-9]+/gim));
 
                 if (matchesno > 10) {
-                  return msg.edit(embed2.setColor('ORANGE').setDescription(`There are too many matching results. (${matchesno})`)).catch(console.error);
+                  return msg.edit(embed2.setColor('ORANGE').setDescription(`There are too many matching results. (${matchesno}/10)`)).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                 }
 
                 if (matchesno === 1) {
@@ -224,9 +222,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                   match = match.replace(/,,,,,,,,,,2,,,,,,,,,,/gim, '');
                   match = match.replace(/,/gim, '');
 
-                  const embed3 = new Discord.MessageEmbed()
-                    .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                    .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+                  const embed3 = defaultEmbed(bot, client, message, config, command, args);
 
                   return msg.edit(embed2.setDescription('Found one matching result. Getting mod information...')).then(async (msg_) => {
                     await require('../util/cors.js')({
@@ -241,14 +237,12 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       // eslint-disable-next-line no-underscore-dangle
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-                      if (getModInfo(embed3, parsedData_, match)) {
-                        msg_.edit(embed3.setColor('BLUE')).catch(console.error);
+                      if (getModInfo(embed3, parsedData_, match, message)) {
+                        msg_.edit(embed3.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                       } else {
-                        const errorembed = new Discord.MessageEmbed()
-                          .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                          .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                        const errorembed = defaultEmbed(bot, client, message, config, command, args)
                           .setColor('RED').setDescription('Could not get data from NexusMods!');
-                        msg_.edit(errorembed).catch(console.error);
+                        msg_.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                       }
                     });
                   });
@@ -263,11 +257,11 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
+                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
-                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
-                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(console.error); } catch (e) { console.error(e); } }, 100);
+                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
                     let index;
                     switch (reaction.emoji.name) {
                       case emojis[1].react:
@@ -306,26 +300,20 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     if (index === -1) {
                       cancelledActions.push(reaction.message.id);
                       // eslint-disable-next-line no-underscore-dangle
-                      const embed__ = new Discord.MessageEmbed()
-                        .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                        .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                      const embed__ = defaultEmbed(bot, client, message, config, command, args)
                         .setColor('RED')
                         .setDescription('Cancelled by user.');
                       if (!reaction.message) return;
-                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.error); } catch (e) { console.error(e); } }, 100);
-                      reaction.message.edit(embed__).catch(console.error);
+                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                      reaction.message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                       return;
                     }
                     cancelledActions.push(reaction.message.id);
-                    const embedX = new Discord.MessageEmbed()
-                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-                    const embedY = new Discord.MessageEmbed()
-                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+                    const embedX = defaultEmbed(bot, client, message, config, command, args);
+                    const embedY = defaultEmbed(bot, client, message, config, command, args);
                     if (!reaction.message) return;
-                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(console.error); } catch (e) { console.error(e); } }, 100);
-                    msg.edit(embedY.setDescription('Loading mod information...')).catch(console.error);
+                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                    msg.edit(embedY.setDescription('Loading mod information...')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                     const match = matcharray.get(index);
                     if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
                     await require('../util/cors.js')({
@@ -340,18 +328,17 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       // eslint-disable-next-line no-underscore-dangle
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
-                      if (getModInfo(embedX, parsedData_, match)) {
-                        msg.edit(embedX.setColor('BLUE')).catch(console.error);
+                      if (getModInfo(embedX, parsedData_, match, message)) {
+                        msg.edit(embedX.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                       } else {
-                        const errorembed = new Discord.MessageEmbed()
-                          .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                          .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                        const errorembed = defaultEmbed(bot, client, message, config, command, args)
                           .setColor('RED').setDescription('Could not get data from NexusMods!');
-                        msg.edit(errorembed).catch(console.error);
+                        msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                       }
                     });
                   } catch (e) {
-                    console.error(e);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    console.error(e.stack);
                   }
                 });
                 collector.on('end', (reaction) => {
@@ -360,20 +347,19 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     if (cancelledActions.includes(reaction.first().message.id)) return;
                     cancelledActions.push(reaction.first().message.id);
                     // eslint-disable-next-line no-underscore-dangle
-                    const embed__ = new Discord.MessageEmbed()
-                      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-                      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL())
+                    const embed__ = defaultEmbed(bot, client, message, config, command, args)
                       .setColor('RED')
                       .setDescription('Automatically cancelled after 60 seconds.');
                     if (!reaction.first().message) return;
-                    setTimeout(() => { try { reaction.first().message.reactions.removeAll().catch(console.log); } catch (e) { console.error(e); } }, 100);
-                    reaction.first().message.edit(embed__).catch(console.error);
+                    setTimeout(() => { try { reaction.first().message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                    reaction.first().message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                   } catch (e) {
-                    console.error(e);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    console.error(e.stack);
                   }
                 });
 
-                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(console.error);
+                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
                 loading.push(msg.id);
 
@@ -404,36 +390,41 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     embed.setDescription(`${embed.description.substring(0, embed.description.length - 24)}\n${emojis[index].emoji} ${namematch} - ${authormatch} - [${idmatch}](https://nexusmods.com/subnautica/mods/${idmatch})${matchesno !== index ? '\nLoading more results...' : ''}`);
 
                     if (cancelledActions.includes(msg.id)) return;
-                    await msg.react(emojis[index].react).catch(console.error);
+                    await msg.react(emojis[index].react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
                     if (cancelledActions.includes(msg.id)) return;
-                    msg.edit(embed).catch(console.error);
+                    msg.edit(embed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                   } catch (e) {
-                    console.error(e);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    console.error(e.stack);
                   }
                 });
 
                 if (cancelledActions.includes(msg.id)) return;
 
-                await msg.react(emojis.x.react).catch(console.error);
+                await msg.react(emojis.x.react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
                 if (cancelledActions.includes(msg.id)) return;
-                msg.edit(embed.setColor('BLUE')).catch(console.error);
+                msg.edit(embed.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
 
                 loading.splice(loading.indexOf(msg.id));
               } catch (e) {
-                console.error(e);
+                message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                console.error(e.stack);
               }
             });
           } catch (e) {
-            console.error(e);
+            message.channel.send(`\`\`\`${e.stack}\`\`\``);
+            console.error(e.stack);
           }
-        }).catch(console.error);
+        }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
       } catch (e) {
-        console.error(e);
+        message.channel.send(`\`\`\`${e.stack}\`\`\``);
+        console.error(e.stack);
       }
     }
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 };
 
