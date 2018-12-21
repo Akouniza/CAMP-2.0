@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const changelog = require('../changelog.json');
+const changelog = require('../version.json');
 const defaultEmbed = require('../util/embed');
 
 /**
