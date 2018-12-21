@@ -14,12 +14,12 @@ try {
     try {
       await require('./events/ready/logging.js')(client, config);
 
-      console.log('Starting bot...');
-
       await require('./events/ready/loadcommands.js')(client);
       await require('./events/ready/setpresence.js')(client, config);
 
-      console.log(`Logged in as '${client.user.tag}'`);
+      client.guilds.get(config.guildID).members.fetch({ cache: true });
+
+      console.log('Bot restarted');
     } catch (e) {
       console.error(e);
     }
