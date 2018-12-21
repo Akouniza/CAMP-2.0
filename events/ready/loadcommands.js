@@ -6,13 +6,14 @@ module.exports = async (client) => {
 
   if (jsfiles.length <= 0) return client.warn('There are no commands to load...');
 
-  client.debug(`Loading ${jsfiles.length} commands...`);
+  // client.debug(`Loading ${jsfiles.length} commands...`);
 
   jsfiles.forEach((f) => {
     const props = require(`../../commands/${f}`);
     if (props.help.disabled) {
-      client.debug(`Skipped loading of command '${props.help.name}' since it was disabled`);
+      // client.debug(`Skipped loading of command '${props.help.name}' since it was disabled`);
     } else {
+      // eslint-disable-next-line no-unused-vars
       let debug = `Loaded command '${props.help.name}'`;
       client.commands.set(props.help.name, props);
       if (props.help.aliases) {
@@ -33,7 +34,7 @@ module.exports = async (client) => {
           client.commands.set(props.help.aliases, props);
         }
       }
-      client.debug(debug);
+      // client.debug(debug);
     }
   });
 };
