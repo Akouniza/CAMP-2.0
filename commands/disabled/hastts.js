@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const defaultEmbed = require('../util/embed');
+const defaultEmbed = require('../../util/embed');
 
 /**
  * @param {Discord.GuildMember} bot
