@@ -1,6 +1,6 @@
 try {
   const Discord = require('discord.js');
-  const ms = require('ms');
+  // //const ms = require('ms');
   const config = process.env.dev === 'false' ? require('./config.json') : require('./dev-config.json');
   const token = process.env.dev === 'false' ? process.env.token : (process.env.devtoken ? process.env.devtoken : require('./token.json').devtoken);
   const defaultEmbed = require('./util/embed');
