@@ -16,10 +16,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot use this command on yourself.')).catch(console.error);
     if (!message.mentions.members.first().roles.has(config.trustedRoleID)) {
       message.mentions.members.first().roles.add(config.trustedRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      message.react('greenTick:312314752711786497');
+      message.react('✅');
     } else {
       message.mentions.members.first().roles.remove(config.trustedRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      message.react('redTick:312314733816709120');
+      message.react('❌');
     }
   } catch (e) {
     console.error(e);
