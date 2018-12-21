@@ -27,12 +27,12 @@ module.exports.run = async (bot, client, config, message, command, args) => {
         else embed.setColor('GREEN');
         msg.edit(embed).catch(console.error);
       } catch (e) {
-        message.channel.send(`\`\`\`${e.stack}\`\`\``);
+        message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
         console.error(e.stack);
       }
-    }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+    }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
   } catch (e) {
-    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
   }
 };

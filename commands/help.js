@@ -43,12 +43,12 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     });
 
     if (user.fields.length >= 1) message.channel.send(user);
-    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID)) || message.member.id === config.devID) && trusted.fields.length >= 1) message.channel.send(trusted).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
-    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID)) || message.member.id === config.devID) && staff.fields.length >= 1) message.channel.send(staff).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
-    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID)) || message.member.id === config.devID) && owner.fields.length >= 1) message.channel.send(owner).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
-    if (message.member.id === config.devID && dev.fields.length >= 1) message.channel.send(dev).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID)) || message.member.id === config.devID) && trusted.fields.length >= 1) message.channel.send(trusted).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
+    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID)) || message.member.id === config.devID) && staff.fields.length >= 1) message.channel.send(staff).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
+    if ((Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID)) || message.member.id === config.devID) && owner.fields.length >= 1) message.channel.send(owner).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
+    if (message.member.id === config.devID && dev.fields.length >= 1) message.channel.send(dev).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
   } catch (e) {
-    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
   }
 };

@@ -56,7 +56,7 @@ try {
         return message.channel.send(embed.setDescription('You do not have the permission to run this command').addField('Required permission', com.help.permission).addField('Your permissions', permissions.join(', ')).setColor('RED'));
       }
     } catch (e) {
-      message.channel.send(`\`\`\`${e.stack}\`\`\``);
+      message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
       console.error(e.stack);
     }
   });

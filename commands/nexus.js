@@ -59,7 +59,7 @@ function isEmpty(string, message) {
     if (string.trim() === '') return true;
     return false;
   } catch (e) {
-    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
   }
 }
@@ -132,7 +132,7 @@ function getModInfo(embed3, parsedData_, match, message) {
 
     return true;
   } catch (e) {
-    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
   }
 }
@@ -156,7 +156,7 @@ const loading = [];
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
     const embed = defaultEmbed(bot, client, message, config, command, args);
-    if (args.length === 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must enter a mod id or a name.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+    if (args.length === 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must enter a mod id or a name.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
     if (args.length === 1 && String(Number(args[0])) === args[0]) {
       const embed2 = defaultEmbed(bot, client, message, config, command, args);
       message.channel.send(embed.setDescription('Loading mod information...')).then(async (msg) => {
@@ -167,29 +167,29 @@ module.exports.run = async (bot, client, config, message, command, args) => {
             data: '',
           }, async (data) => {
             try {
-              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+              if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
-              if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+              if ((String(data).includes('The mod you were looking for couldn\'t be found') && String(data).includes('Not found')) || (String(data).includes('Hidden file') && String(data).includes('This mod has been set to hidden by its author')) || (String(data).includes('Under moderation') && String(data).includes('This mod is under moderation review'))) return msg.edit(embed2.setColor('ORANGE').setDescription('The mod you were looking for couldn\'t be found.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
               const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
               if (getModInfo(embed2, parsedData, args[0], message)) {
-                msg.edit(embed2.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                msg.edit(embed2.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
               } else {
                 const errorembed = defaultEmbed(bot, client, message, config, command, args)
                   .setColor('RED').setDescription('Could not get data from NexusMods!');
-                msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
               }
             } catch (e) {
-              message.channel.send(`\`\`\`${e.stack}\`\`\``);
+              message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
               console.error(e.stack);
             }
           });
         } catch (e) {
-          message.channel.send(`\`\`\`${e.stack}\`\`\``);
+          message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
           console.error(e.stack);
         }
-      }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+      }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
     } else {
       try {
         const embed2 = defaultEmbed(bot, client, message, config, command, args);
@@ -203,9 +203,9 @@ module.exports.run = async (bot, client, config, message, command, args) => {
               data: '',
             }, async (data) => {
               try {
-                if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
+                if (!data || data === '') return msg.edit(embed2.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)) && console.error(`Could not get data from NexusMods! Mod ID = ${args[0]}`);
 
-                if (String(data).includes('No result')) return msg.edit(embed2.setColor('ORANGE').setDescription('There are no matching results.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                if (String(data).includes('No result')) return msg.edit(embed2.setColor('ORANGE').setDescription('There are no matching results.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
                 const parsedData = String(data.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
@@ -213,7 +213,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 matchesno = Number(matchesno.match(/[0-9]+/gim));
 
                 if (matchesno > 10) {
-                  return msg.edit(embed2.setColor('ORANGE').setDescription(`There are too many matching results. (${matchesno}/10)`)).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                  return msg.edit(embed2.setColor('ORANGE').setDescription(`There are too many matching results. (${matchesno}/10)`)).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                 }
 
                 if (matchesno === 1) {
@@ -238,11 +238,11 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
                       if (getModInfo(embed3, parsedData_, match, message)) {
-                        msg_.edit(embed3.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                        msg_.edit(embed3.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                       } else {
                         const errorembed = defaultEmbed(bot, client, message, config, command, args)
                           .setColor('RED').setDescription('Could not get data from NexusMods!');
-                        msg_.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                        msg_.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                       }
                     });
                   });
@@ -257,11 +257,11 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                 const collector = msg.createReactionCollector(() => true, { time: 60000 });
                 collector.on('collect', async (reaction, user) => {
                   try {
-                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                    if (user.bot && cancelledActions.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
                     if (cancelledActions.includes(reaction.message.id)) return;
                     if (user.bot) return;
-                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
-                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
+                    if (loading.includes(reaction.message.id)) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
+                    if (user.id !== message.member.user.id) return setTimeout(() => { try { reaction.users.remove(user).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
                     let index;
                     switch (reaction.emoji.name) {
                       case emojis[1].react:
@@ -304,16 +304,16 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                         .setColor('RED')
                         .setDescription('Cancelled by user.');
                       if (!reaction.message) return;
-                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
-                      reaction.message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                      setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
+                      reaction.message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                       return;
                     }
                     cancelledActions.push(reaction.message.id);
                     const embedX = defaultEmbed(bot, client, message, config, command, args);
                     const embedY = defaultEmbed(bot, client, message, config, command, args);
                     if (!reaction.message) return;
-                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
-                    msg.edit(embedY.setDescription('Loading mod information...')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                    setTimeout(() => { try { reaction.message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
+                    msg.edit(embedY.setDescription('Loading mod information...')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                     const match = matcharray.get(index);
                     if (!match) return msg.edit(embedX.setColor('RED').setDescription('An error occurred.\nIt seems that the mod you chose doesn\'t exist...'));
                     await require('../util/cors.js')({
@@ -329,15 +329,15 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       const parsedData_ = String(data_.replace(/<script[^>]*>[^]*?<\/script>/gim, ''));
 
                       if (getModInfo(embedX, parsedData_, match, message)) {
-                        msg.edit(embedX.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                        msg.edit(embedX.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                       } else {
                         const errorembed = defaultEmbed(bot, client, message, config, command, args)
                           .setColor('RED').setDescription('Could not get data from NexusMods!');
-                        msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                        msg.edit(errorembed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                       }
                     });
                   } catch (e) {
-                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
                     console.error(e.stack);
                   }
                 });
@@ -351,15 +351,15 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                       .setColor('RED')
                       .setDescription('Automatically cancelled after 60 seconds.');
                     if (!reaction.first().message) return;
-                    setTimeout(() => { try { reaction.first().message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``); console.error(e.stack); } }, 100);
-                    reaction.first().message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                    setTimeout(() => { try { reaction.first().message.reactions.removeAll().catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)); } catch (e) { message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)); console.error(e.stack); } }, 100);
+                    reaction.first().message.edit(embed__).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                   } catch (e) {
-                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
                     console.error(e.stack);
                   }
                 });
 
-                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                if (!matches) return msg.edit(embed.setColor('RED').setDescription('Could not get data from NexusMods!')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
                 loading.push(msg.id);
 
@@ -390,40 +390,40 @@ module.exports.run = async (bot, client, config, message, command, args) => {
                     embed.setDescription(`${embed.description.substring(0, embed.description.length - 24)}\n${emojis[index].emoji} ${namematch} - ${authormatch} - [${idmatch}](https://nexusmods.com/subnautica/mods/${idmatch})${matchesno !== index ? '\nLoading more results...' : ''}`);
 
                     if (cancelledActions.includes(msg.id)) return;
-                    await msg.react(emojis[index].react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                    await msg.react(emojis[index].react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
                     if (cancelledActions.includes(msg.id)) return;
-                    msg.edit(embed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                    msg.edit(embed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                   } catch (e) {
-                    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
                     console.error(e.stack);
                   }
                 });
 
                 if (cancelledActions.includes(msg.id)) return;
 
-                await msg.react(emojis.x.react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                await msg.react(emojis.x.react).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
                 if (cancelledActions.includes(msg.id)) return;
-                msg.edit(embed.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+                msg.edit(embed.setColor('BLUE')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
 
                 loading.splice(loading.indexOf(msg.id));
               } catch (e) {
-                message.channel.send(`\`\`\`${e.stack}\`\`\``);
+                message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
                 console.error(e.stack);
               }
             });
           } catch (e) {
-            message.channel.send(`\`\`\`${e.stack}\`\`\``);
+            message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
             console.error(e.stack);
           }
-        }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+        }).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack));
       } catch (e) {
-        message.channel.send(`\`\`\`${e.stack}\`\`\``);
+        message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
         console.error(e.stack);
       }
     }
   } catch (e) {
-    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
   }
 };
