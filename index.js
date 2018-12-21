@@ -12,7 +12,7 @@ try {
 
   client.on('ready', async () => {
     try {
-      client.channels.get('324207672293326848').messages.fetch('525596711570243584').then(message => message.react(':greenTick:312314752711786497')).catch(console.error);
+      client.channels.get('324207672293326848').messages.fetch('525596711570243584').then(message => message.react('greenTick:312314752711786497')).catch(console.error);
 
       await require('./events/ready/logging.js')(client, config);
 
