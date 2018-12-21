@@ -36,4 +36,5 @@ module.exports.help = {
   aliases: null,
   permission: 'staff',
   disabled: false,
+  donotdelete: true,
 };
