@@ -27,5 +27,5 @@ module.exports.help = {
   examples: null,
   aliases: null,
   permission: 'dev',
-  disabled: false,
+  disabled: true,
 };

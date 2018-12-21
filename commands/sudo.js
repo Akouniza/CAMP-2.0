@@ -57,5 +57,5 @@ module.exports.help = {
   aliases: null,
   permission: 'owner',
   permission2: 'dev',
-  disabled: false,
+  disabled: true,
 };
