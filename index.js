@@ -38,7 +38,7 @@ try {
 
       const embed = defaultEmbed(bot, client, message, config, command, args);
 
-      if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
+      // //if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 
       const permissions = ['user'];
       if (message.member.id === config.devID) permissions.push('trusted', 'staff', 'owner', 'dev');
