@@ -27,9 +27,9 @@ try {
 
   client.on('message', (message) => {
     try {
-      const bot = message.guild.members.get(client.user.id);
-
       if (message.author.bot) return;
+      
+      const bot = message.guild.members.get(client.user.id);
 
       if (!message.content.startsWith(config.prefix)) return;
 
