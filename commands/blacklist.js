@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 const fs = require('fs');
+const defaultEmbed = require('../util/embed');
 
 /**
  * @param {Discord.GuildMember} bot
@@ -10,9 +12,7 @@ const fs = require('fs');
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    const embed = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    const embed = defaultEmbed(bot, client, message, config, command, args);
     if (message.mentions.members.size <= 0) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage\nYou must mention a user.')).catch(console.error);
     const blacklist = require('../blacklist.json');
     if (!blacklist.blacklisted.includes(message.mentions.members.first().id)) {

@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
+const defaultEmbed = require('../util/embed');
 
 /**
  * @param {Discord.GuildMember} bot
@@ -9,9 +11,7 @@ const Discord = require('discord.js');
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    const embed = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    const embed = defaultEmbed(bot, client, message, config, command, args);
     if (message.mentions.members.size !== 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention exactly one user.')).catch(console.error);
     if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot use this command on yourself.')).catch(console.error);
     if (!message.mentions.members.first().roles.has(config.modderRoleID)) {

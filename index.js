@@ -3,6 +3,7 @@ try {
   const ms = require('ms');
   const config = process.env.dev === 'false' ? require('./config.json') : require('./dev-config.json');
   const token = process.env.dev === 'false' ? process.env.token : (process.env.devtoken ? process.env.devtoken : require('./token.json').devtoken);
+  const defaultEmbed = require('./util/embed');
 
   const client = new Discord.Client();
 
@@ -36,9 +37,7 @@ try {
       const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
       const command = args.shift().toLowerCase();
 
-      const embed = new Discord.MessageEmbed()
-        .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-        .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+      const embed = defaultEmbed(bot, client, message, config, command, args);
 
       if (client.timeout.time > 0) if (command !== 'timeout') return message.channel.send(embed.setDescription(`The bot is disabled for ${ms(client.timeout.time, { long: true })}.`).setColor('RED'));
 

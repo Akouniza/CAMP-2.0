@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
+const defaultEmbed = require('../util/embed');
 
 /**
  * @param {Discord.GuildMember} bot
@@ -9,9 +11,7 @@ const Discord = require('discord.js');
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    const embed = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    const embed = defaultEmbed(bot, client, message, config, command, args);
 
     const permissions = ['user'];
     if (message.member.id === config.devID) if (client.op) permissions.push('trusted', 'staff', 'owner', 'dev'); else permissions.push('trusted', 'dev');

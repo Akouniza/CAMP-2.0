@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
+const defaultEmbed = require('../util/embed');
 
 /**
  * @param {Discord.GuildMember} bot
@@ -9,26 +11,16 @@ const Discord = require('discord.js');
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    const user = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setTitle('__User Commands__')
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-    const trusted = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setTitle('__Trusted Commands__')
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-    const staff = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setTitle('__Staff Commands__')
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-    const owner = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setTitle('__Owner Commands__')
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
-    const dev = new Discord.MessageEmbed()
-      .setAuthor(bot.nickname ? bot.nickname : bot.user.username, client.user.avatarURL())
-      .setTitle('__Developer Commands__')
-      .setFooter(`${message.member.nickname ? message.member.nickname : message.member.user.username}: ${config.prefix}${command} ${args.join(' ')}`, message.member.user.avatarURL());
+    const user = defaultEmbed(bot, client, message, config, command, args)
+      .setTitle('__User Commands__');
+    const trusted = defaultEmbed(bot, client, message, config, command, args)
+      .setTitle('__Trusted Commands__');
+    const staff = defaultEmbed(bot, client, message, config, command, args)
+      .setTitle('__Staff Commands__');
+    const owner = defaultEmbed(bot, client, message, config, command, args)
+      .setTitle('__Owner Commands__');
+    const dev = defaultEmbed(bot, client, message, config, command, args)
+      .setTitle('__Developer Commands__');
 
     Array.from(client.commands.values()).forEach((cmd) => {
       const name = `${config.prefix}${cmd.help.name}`;
