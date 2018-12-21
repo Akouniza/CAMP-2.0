@@ -7,7 +7,7 @@ try {
 
   const client = new Discord.Client();
 
-  client.timeout = { time: 0, channel: null };
+  // //client.timeout = { time: 0, channel: null };
   client.commands = new Discord.Collection();
 
   client.on('ready', async () => {
