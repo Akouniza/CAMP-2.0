@@ -27,4 +27,5 @@ module.exports.help = {
   aliases: null,
   permission: 'dev',
   disabled: false,
+  donotdelete: true,
 };
