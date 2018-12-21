@@ -28,6 +28,7 @@ try {
   client.on('message', (message) => {
     try {
       if (message.author.bot) return;
+      if (!message.guild) return;
       
       const bot = message.guild.members.get(client.user.id);
 
