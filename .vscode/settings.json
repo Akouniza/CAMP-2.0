@@ -1,6 +1,3 @@
 {
-  "javascript.suggestionActions.enabled": false,
-  "files.exclude": {
-    "**/token​.json": true
-  }
+  "javascript.suggestionActions.enabled": false
 }
