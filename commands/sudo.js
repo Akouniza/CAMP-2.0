@@ -56,6 +56,5 @@ module.exports.help = {
   examples: null,
   aliases: null,
   permission: 'owner',
-  permission2: 'dev',
   disabled: true,
 };
