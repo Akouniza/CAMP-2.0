@@ -17,7 +17,7 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       .addField('Author', `<@${message.guild.members.get(config.devID).user.id}>`, true)
       .addField('Version', changelog.version, true)
       .addField('Running from', process.env.token ? 'Heroku' : 'Visual Studio Code', true)
-      .addField('Changes', '• ' + changelog.items.join('\n• '));
+      .addField('Changelog', 'https://announcekit.app/camp-2.0/patch-notes');
     message.channel.send(embed).catch(console.error);
   } catch (e) {
     console.error(e);
