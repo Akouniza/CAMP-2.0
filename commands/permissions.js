@@ -19,9 +19,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
     else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID))) permissions.push('trusted', 'staff');
     else if (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID))) permissions.push('trusted');
 
-    message.channel.send(embed.addField('Your permissions', permissions.join(', '))).catch(console.error);
+    message.channel.send(embed.addField('Your permissions', permissions.join(', '))).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 };
 

@@ -18,9 +18,10 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       .addField('Version', changelog.version, true)
       .addField('Running from', process.env.token ? 'Heroku' : 'Visual Studio Code', true)
       .addField('Changelog', 'https://announcekit.app/camp-2.0/patch-notes');
-    message.channel.send(embed).catch(console.error);
+    message.channel.send(embed).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 };
 

@@ -12,17 +12,18 @@ const defaultEmbed = require('../util/embed');
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
     const embed = defaultEmbed(bot, client, message, config, command, args);
-    if (message.mentions.members.size !== 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention exactly one user.')).catch(console.error);
-    if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot use this command on yourself.')).catch(console.error);
+    if (message.mentions.members.size !== 1) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou must mention exactly one user.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+    if (message.mentions.members.first().user.id === message.member.user.id) return message.channel.send(embed.setColor('RED').setDescription('Invalid command usage.\nYou cannot use this command on yourself.')).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
     if (!message.mentions.members.first().roles.has(config.modderRoleID)) {
-      message.mentions.members.first().roles.add(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      message.react('✅').catch(console.error);
+      message.mentions.members.first().roles.add(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+      message.react('✅').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
     } else {
-      message.mentions.members.first().roles.remove(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(console.error);
-      message.react('❌').catch(console.error);
+      message.mentions.members.first().roles.remove(config.modderRoleID, `${message.author.tag}: ${config.prefix}${command} ${args.join(' ')}`).catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
+      message.react('❌').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``) && console.error(e.stack));
     }
   } catch (e) {
-    console.error(e);
+    message.channel.send(`\`\`\`${e.stack}\`\`\``);
+    console.error(e.stack);
   }
 };
 
