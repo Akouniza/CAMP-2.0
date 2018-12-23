@@ -18,15 +18,15 @@ module.exports.run = async (bot, client, config, message, command, args) => {
       const name = `${config.prefix}${cmd.help.name}`;
       const desc = `${cmd.help.description}${cmd.help.usage ? `\n_Usage: \`${name} ${cmd.help.usage}\`_` : ''}${cmd.help.examples && cmd.help.examples.length && Array.isArray(cmd.help.examples) > 0 ? `\n_Examples: \`${name} ${cmd.help.examples.join(`\`, \`${name} `)}\`_` : ''}`;
       if (cmd.help.permission === 'dev' && message.member.id === config.devID) {
-        embed.addField(name, desc);
+        embed.addField(`**${name}**`, `**${desc}**`);
       } else if (cmd.help.permission === 'owner' && (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.ownerRoleID)) || message.member.id === config.devID)) {
-        embed.addField(name, desc);
+        embed.addField(`**${name}**`, `**${desc}**`);
       } else if (cmd.help.permission === 'staff' && (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.staffRoleID)) || message.member.id === config.devID)) {
-        embed.addField(name, desc);
+        embed.addField(`**${name}**`, `**${desc}**`);
       } else if (cmd.help.permission === 'trusted' && (Array.from(message.member.roles.values()).includes(message.member.guild.roles.get(config.trustedRoleID)) || message.member.id === config.devID)) {
-        embed.addField(name, desc);
+        embed.addField(`**${name}**`, `**${desc}**`);
       } else if (cmd.help.permission === 'user') {
-        embed.addField(name, desc);
+        embed.addField(`**${name}**`, `**${desc}**`);
       } else {
         embed.addField(`~~${name}~~`, `~~${desc}~~`);
       }
