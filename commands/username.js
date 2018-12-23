@@ -10,7 +10,9 @@ const Discord = require('discord.js');
  */
 module.exports.run = async (bot, client, config, message, command, args) => {
   try {
-    client.user.setUsername(args.join(' ')).then(() => message.react('✅').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack))).catch(() => message.react('❌').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)));
+    client.user.setUsername(args.join(' '))
+      .then(() => message.react('✅').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)))
+      .catch(() => message.react('❌').catch(e => message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack)) && console.error(e.stack)));
   } catch (e) {
     message.channel.send(`\`\`\`${e.stack}\`\`\``).catch(xe => console.error(xe.stack));
     console.error(e.stack);
